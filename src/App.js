@@ -1,13 +1,18 @@
 import './App.css';
+import { useState } from 'react';
+import { people } from './data/people';
+import { products } from './data/products';
 import SplitScreen from './SplitScreen';
 import RegularList from './components/Lists/RegularList';
 import OrderedList from './components/Lists/OrderedList';
 import SmallPersonList from './components/person/SmallPersonList';
 import LargeProductList from './components/product/LargeProductList';
 import LargePersonList from './components/person/LargePersonList';
-import { people } from './data/people';
-import { products } from './data/products';
 import SmallProductList from './components/product/SmallProductList';
+import Modal from './components/modal/modal';
+import CurrentUserLoader from './components/api/UserLoader.js';
+import UserInfo from './components/user/UserInfo.js';
+
 
 
 
@@ -21,35 +26,60 @@ const RightHandComponent = ({ name }) => {
 }
 
 function App() {
-
+  const [show, setShow] = useState({
+    splitScreen: false,
+    lists: false,
+    modals: false,
+  })
 
   return (
     <div className="App">
-      <SplitScreen leftWeight={ 1 } rightWeight={ 2 } >
-        <LeftHandComponent name={ 'LEFT!' } />
-        <RightHandComponent name={ 'RIGHT!' } />
-      </SplitScreen>
+
+      {/* Layout Component */ }
+
+      <h1>Split Screen <button onClick={ () => setShow(prev => ({ ...prev, splitScreen: !prev.splitScreen })) } >Show/Hide</button></h1>
+      { show.splitScreen &&
+        <SplitScreen leftWeight={ 1 } rightWeight={ 2 } >
+          <LeftHandComponent name={ 'LEFT!' } />
+          <RightHandComponent name={ 'RIGHT!' } />
+        </SplitScreen>
+      }
       <hr />
-      <RegularList
-        items={ people }
-        resourceName='person'
-        itemComponent={ SmallPersonList }
-      />
-      <RegularList
-        items={ people }
-        resourceName='person'
-        itemComponent={ LargePersonList }
-      />
-      <OrderedList
-        items={ products }
-        resourceName='products'
-        itemComponent={ SmallProductList }
-      />
-      <OrderedList
-        items={ products }
-        resourceName='products'
-        itemComponent={ LargeProductList }
-      />
+      <h1>List Types <button onClick={ () => setShow(prev => ({ ...prev, lists: !prev.lists })) } >Show/Hide</button> </h1>
+      { show.lists && <>
+        <RegularList
+          items={ people }
+          resourceName='person'
+          itemComponent={ SmallPersonList }
+        />
+        <RegularList
+          items={ people }
+          resourceName='person'
+          itemComponent={ LargePersonList }
+        />
+        <OrderedList
+          items={ products }
+          resourceName='products'
+          itemComponent={ SmallProductList }
+        />
+        <OrderedList
+          items={ products }
+          resourceName='products'
+          itemComponent={ LargeProductList }
+        />
+      </> }
+      <hr />
+      <h1>Modal</h1>
+      <Modal>
+        <LargeProductList products={ products[0] } />
+      </Modal>
+      <hr />
+
+      {/* Container Components */ }
+      
+      <CurrentUserLoader >
+        <UserInfo />
+      </CurrentUserLoader>
 
     </div>
   );
